@@ -16,19 +16,15 @@ func (t TestModule) GetVersion() string {
 	return "1.0"
 }
 
-func (t TestModule) Post(r *http.Request, res http.ResponseWriter) error {
-	return nil
+func (t TestModule) Post(res http.ResponseWriter, r *http.Request) {
 } 
-func (t TestModule) Get(r *http.Request, res http.ResponseWriter) error {
-	return nil
+func (t TestModule) Get(res http.ResponseWriter, r *http.Request) {
 }
 
-func (t TestModule) Put(r *http.Request, res http.ResponseWriter) error {
-	return nil
+func (t TestModule) Put(res http.ResponseWriter, r *http.Request) {
 }
 
-func (t TestModule) Delete(r *http.Request, res http.ResponseWriter) error {
-	return nil
+func (t TestModule) Delete(res http.ResponseWriter, r *http.Request) {
 }
 
 var testModulesAdded = 0
@@ -50,18 +46,5 @@ func TestCountNumberOfWebModules(t *testing.T) {
 	out := NumberOfModules()
 	if(out != testModulesAdded) {
 		t.Errorf("NumberOfModules=%v, expected 0", out)
-	}
-}
-
-func TestHandleRequest(t *testing.T) {
-	mod := TestModule{}
-	RegisterModule(mod)
-
-	req := http.Request{}
-	req.Method = "GET"
-
-	errors := HandleRequest(mod.GetPath(), &req	, nil)
-	if(errors != nil) {
-		t.Errorf("Unexpected error when handling Path: %v", errors)
 	}
 }

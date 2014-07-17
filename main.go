@@ -3,7 +3,7 @@ package main
 import (
 		"log"
 		"net/http"
-		_ "github.com/haggen-/nexus-events/routing"
+		routing "github.com/haggen-/nexus-events/routing"
 		_ "github.com/haggen-/nexus-events/modules/users"
 		)
 
@@ -28,6 +28,10 @@ func main() {
 }
 
 func startWebServer(settings HttpSettings) error {
+	ok := routing.InitPaths()
+	if(ok != nil) {
+		return ok
+	}
 	return http.ListenAndServe(settings.portNumber, nil)
 }
 

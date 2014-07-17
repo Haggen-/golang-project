@@ -1,10 +1,8 @@
 package routing
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"errors"
 )
 
 const PACKAGE_NAME string = "Routing"
@@ -13,10 +11,12 @@ type WebModule interface {
 	GetVersion() string
 	GetPath() string
 
-	Get(r *http.Request, res http.ResponseWriter) error
-	Post(r *http.Request, res http.ResponseWriter) error
-	Put(r *http.Request, res http.ResponseWriter) error
-	Delete(r *http.Request, res http.ResponseWriter) error
+	HandleRequest(http.ResponseWriter, *http.Request)
+
+	get(res http.ResponseWriter, r *http.Request)
+	post(res http.ResponseWriter, r *http.Request)
+	put(res http.ResponseWriter, r *http.Request)
+	delete(res http.ResponseWriter, r *http.Request)
 }
 
 var webServerModules = make(map[string]WebModule)
@@ -37,25 +37,9 @@ func RegisterModule(module WebModule) {
 	}
 }
 
-func HandleRequest(path string, r *http.Request, res http.ResponseWriter) error {
-	val, ok := webServerModules[path]
-	if(!ok) {
-		message := fmt.Sprintf("Could not handle request for path %v, no appropriate webmodule found.", path)
-		log.Println(message)
-		return errors.New(message)
+func InitPaths() error {
+	for path, module := range webServerModules {
+		http.HandleFunc(path, module.HandleRequest)
 	}
-
-	log.Println("Received %v request to handler.")	
-	switch r.Method {
-	case "GET":
-		return val.Get(r, res)
-	case "PUT":
-		return val.Put(r, res)
-	case "POST":
-		return val.Post(r, res)
-	case "DELETE":
-		return val.Delete(r, res)
-	default:
-		return errors.New(fmt.Sprintf("Could not handle request using method %v", r.Method))
-	}
+	return nil
 }
